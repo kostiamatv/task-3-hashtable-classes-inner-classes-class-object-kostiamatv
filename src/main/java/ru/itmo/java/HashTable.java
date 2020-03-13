@@ -49,19 +49,6 @@ public class HashTable {
         } else {
             return array[index].getValue();
         }
-//        int index = Math.abs(key.hashCode()) % array.length;
-//        while (array[index] != null && array[index].notDeleted()) {
-//            if (array[index].getKey() == key && array[index].notDeleted()) {
-//                return array[index].getValue();
-//            }
-//            if(array[index].getKey() == key && array[index].isDeleted()){
-//                break;
-//            }
-//            index++;
-//            if (index == array.length) {
-//                index = 0;
-//            }
-//        }
     }
 
     public Object remove(Object key) {
@@ -72,18 +59,6 @@ public class HashTable {
         size--;
         array[index].setDeleted();
         return array[index].getValue();
-//        while (array[index] != null) {
-//            if (array[index].getKey() == key && array[index].notDeleted()) {
-//                array[index].setDeleted();
-//                size--;
-//                return array[index].getValue();
-//            }
-//            index++;
-//            if (index == array.length) {
-//                index = 0;
-//            }
-//        }
-//        return null;
     }
 
     public int size() {
