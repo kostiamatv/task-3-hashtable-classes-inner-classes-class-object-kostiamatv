@@ -41,7 +41,7 @@ public class HashTable {
 
     public Object get(Object key) {
         int index = getIndex(key);
-        if (array[index] == null || array[index].isDeleted()) {
+        if (entityExists(index)) {
             return null;
         }
         return array[index].getValue();
@@ -49,7 +49,7 @@ public class HashTable {
 
     public Object remove(Object key) {
         int index = getIndex(key);
-        if (array[index] == null || array[index].isDeleted()) {
+        if (entityExists(index)) {
             return null;
         }
         size--;
@@ -62,6 +62,10 @@ public class HashTable {
         return size;
     }
 
+    private boolean entityExists(int index) {
+        return array[index] == null || array[index].isDeleted();
+    }
+
     private int getIndex(Object key) {
         int arrayLength = array.length;
         int index = Math.abs(key.hashCode() % arrayLength);
@@ -71,10 +75,10 @@ public class HashTable {
 
         boolean secondTurn = false;
         while (array[index] != null) {
-            if (array[index].notDeleted() && array[index].getKey().equals(key)){
+            if (array[index].notDeleted() && array[index].getKey().equals(key)) {
                 break;
             }
-            if(secondTurn && array[index].isDeleted()){
+            if (secondTurn && array[index].isDeleted()) {
                 break;
             }
             index++;
@@ -87,7 +91,6 @@ public class HashTable {
         }
         return index;
     }
-
 
 
     private int getThreshold() {
