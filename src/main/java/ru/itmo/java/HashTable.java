@@ -1,11 +1,14 @@
 package ru.itmo.java;
 
+import java.util.HashSet;
+
 public class HashTable {
 
     private static final int DEFAULT_SIZE = 1000;
     private static final double DEFAULT_LOAD_FACTOR = 0.5;
 
     private int size = 0;
+    private HashSet<Object> keys = new HashSet<>();
     private Entity[] array;
     private double loadFactor;
 
@@ -27,11 +30,12 @@ public class HashTable {
     }
 
     public Object put(Object key, Object value) {
-        int index = getIndex(key, array.length);
+        int index = getIndex(key);
         Entity oldEntity = array[index];
         array[index] = new Entity(key, value);
         if (oldEntity == null || oldEntity.isDeleted()) {
             size++;
+            keys.add(key);
             checkAndResizeIfNeeded();
             return null;
         }
@@ -39,7 +43,7 @@ public class HashTable {
     }
 
     public Object get(Object key) {
-        int index = getIndex(key, array.length);
+        int index = getIndex(key);
         if (array[index] == null || array[index].isDeleted()) {
             return null;
         }
@@ -47,43 +51,51 @@ public class HashTable {
     }
 
     public Object remove(Object key) {
-        int index = getIndex(key, array.length);
+        int index = getIndex(key);
         if (array[index] == null || array[index].isDeleted()) {
             return null;
         }
         size--;
-        array[index].setDeleted();
-        return array[index].getValue();
+        keys.remove(key);
+        var value = array[index].getValue();
+        array[index] = Entity.DELETED;
+        return value;
     }
 
     public int size() {
         return size;
     }
 
-    private int getIndex(Object key, int arrayLength) {
-        int hash = Math.abs(key.hashCode());
-        int index = hash % arrayLength;
-        while (array[index] != null && !array[index].getKey().equals(key)) {
-            index++;
-            if (index == array.length) {
-                index = 0;
-            }
-            if (index == hash % arrayLength) {
+    private int getIndex(Object key) {
+        int arrayLength = array.length;
+        int index = Math.abs(key.hashCode() % arrayLength);
+        int startIndex = index;
+        boolean keyInKeys = keys.contains(key);
+
+
+        boolean secondTurn = false;
+        while (array[index] != null) {
+            if (array[index].notDeleted() && array[index].getKey().equals(key)){
                 break;
             }
-        }
-        if (array[index] == null || array[index].getKey().equals(key)) {
-            return index;
-        }
-        index = hash % arrayLength;
-        while (array[index].notDeleted()) {
+            if (array[index].isDeleted() && !keyInKeys){
+                break;
+            }
+            if(secondTurn && array[index].isDeleted()){
+                break;
+            }
             index++;
             if (index == array.length) {
                 index = 0;
+            }
+            if (index == startIndex) {
+                secondTurn = true;
             }
         }
         return index;
     }
+
+
 
     private int getThreshold() {
         return (int) (loadFactor * array.length);
@@ -91,11 +103,11 @@ public class HashTable {
 
     private void checkAndResizeIfNeeded() {
         if (size >= getThreshold()) {
-            var oldArray = array;
-            array = new Entity[array.length * 2];
+            Entity[] oldArray = array;
+            array = new Entity[oldArray.length * 2];
             for (Entity entity : oldArray) {
                 if (entity != null && entity.notDeleted()) {
-                    array[getIndex(entity.getKey(), array.length)] = entity;
+                    array[getIndex(entity.getKey())] = entity;
                 }
             }
         }
@@ -105,12 +117,12 @@ public class HashTable {
     private static class Entity {
         private final Object key;
         private final Object value;
-        private boolean deleted;
+
+        private static final Entity DELETED = new Entity(null, null);
 
         public Entity(Object key, Object value) {
             this.key = key;
             this.value = value;
-            deleted = false;
         }
 
         public Object getKey() {
@@ -122,15 +134,12 @@ public class HashTable {
         }
 
         public boolean notDeleted() {
-            return !deleted;
+            return this != DELETED;
         }
 
         public boolean isDeleted() {
-            return deleted;
+            return this == DELETED;
         }
 
-        public void setDeleted() {
-            deleted = true;
-        }
     }
 }
