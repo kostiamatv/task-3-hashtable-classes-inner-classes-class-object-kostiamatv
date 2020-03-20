@@ -40,7 +40,7 @@ public class HashTable {
 
     public Object get(Object key) {
         int index = getIndex(key, array.length);
-        if (array[index] == null || array[index].isDeleted()) {
+        if (entityExists(index)) {
             return null;
         }
         return array[index].getValue();
@@ -48,7 +48,7 @@ public class HashTable {
 
     public Object remove(Object key) {
         int index = getIndex(key, array.length);
-        if (array[index] == null || array[index].isDeleted()) {
+        if (entityExists(index)) {
             return null;
         }
         size--;
@@ -58,6 +58,10 @@ public class HashTable {
 
     public int size() {
         return size;
+    }
+
+    private boolean entityExists(int index){
+        return array[index] == null || array[index].isDeleted();
     }
 
     private int getIndex(Object key, int arrayLength) {
