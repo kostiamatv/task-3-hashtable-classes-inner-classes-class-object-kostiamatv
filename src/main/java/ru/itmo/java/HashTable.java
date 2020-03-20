@@ -34,18 +34,16 @@ public class HashTable {
             size++;
             checkAndResizeIfNeeded();
             return null;
-        } else {
-            return oldEntity.getValue();
         }
+        return oldEntity.getValue();
     }
 
     public Object get(Object key) {
         int index = getIndex(key, array.length);
         if (array[index] == null || array[index].isDeleted()) {
             return null;
-        } else {
-            return array[index].getValue();
         }
+        return array[index].getValue();
     }
 
     public Object remove(Object key) {
@@ -104,9 +102,9 @@ public class HashTable {
     }
 
 
-    private class Entity {
-        private Object key;
-        private Object value;
+    private static class Entity {
+        private final Object key;
+        private final Object value;
         private boolean deleted;
 
         public Entity(Object key, Object value) {
