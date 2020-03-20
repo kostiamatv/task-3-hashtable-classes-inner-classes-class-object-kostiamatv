@@ -27,7 +27,7 @@ public class HashTable {
     }
 
     public Object put(Object key, Object value) {
-        int index = getIndex(key, array.length);
+        int index = getIndex(key);
         Entity oldEntity = array[index];
         array[index] = new Entity(key, value);
         if (oldEntity == null || oldEntity.isDeleted()) {
@@ -39,7 +39,7 @@ public class HashTable {
     }
 
     public Object get(Object key) {
-        int index = getIndex(key, array.length);
+        int index = getIndex(key);
         if (entityExists(index)) {
             return null;
         }
@@ -47,7 +47,7 @@ public class HashTable {
     }
 
     public Object remove(Object key) {
-        int index = getIndex(key, array.length);
+        int index = getIndex(key);
         if (entityExists(index)) {
             return null;
         }
@@ -60,30 +60,29 @@ public class HashTable {
         return size;
     }
 
-    private boolean entityExists(int index){
+    private boolean entityExists(int index) {
         return array[index] == null || array[index].isDeleted();
     }
 
-    private int getIndex(Object key, int arrayLength) {
-        int hash = Math.abs(key.hashCode());
-        int index = hash % arrayLength;
-        while (array[index] != null && !array[index].getKey().equals(key)) {
-            index++;
-            if (index == array.length) {
-                index = 0;
-            }
-            if (index == hash % arrayLength) {
+    private int getIndex(Object key) {
+
+        int arrayLength = array.length;
+        int index = Math.abs(key.hashCode() % arrayLength);
+        int startIndex = index;
+        boolean secondTurn = false;
+        while (array[index] != null) {
+            if (array[index].getKey().equals(key)) {
                 break;
             }
-        }
-        if (array[index] == null || array[index].getKey().equals(key)) {
-            return index;
-        }
-        index = hash % arrayLength;
-        while (array[index].notDeleted()) {
+            if (secondTurn && array[index].isDeleted()) {
+                break;
+            }
             index++;
             if (index == array.length) {
                 index = 0;
+            }
+            if (index == startIndex) {
+                secondTurn = true;
             }
         }
         return index;
@@ -99,7 +98,7 @@ public class HashTable {
             array = new Entity[array.length * 2];
             for (Entity entity : oldArray) {
                 if (entity != null && entity.notDeleted()) {
-                    array[getIndex(entity.getKey(), array.length)] = entity;
+                    array[getIndex(entity.getKey())] = entity;
                 }
             }
         }
