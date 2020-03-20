@@ -75,8 +75,6 @@ public class HashTable {
         int index = Math.abs(key.hashCode() % arrayLength);
         int startIndex = index;
         boolean keyInKeys = keys.contains(key);
-
-
         boolean secondTurn = false;
         while (array[index] != null) {
             if (array[index].notDeleted() && array[index].getKey().equals(key)) {
