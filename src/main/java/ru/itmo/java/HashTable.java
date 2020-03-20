@@ -32,7 +32,7 @@ public class HashTable {
         array[index] = new Entity(key, value);
         if (oldEntity == null || oldEntity.isDeleted()) {
             size++;
-            checkSize();
+            checkAndResizeIfNeeded();
             return null;
         } else {
             return oldEntity.getValue();
@@ -91,21 +91,18 @@ public class HashTable {
         return (int) (loadFactor * array.length);
     }
 
-    private void checkSize() {
+    private void checkAndResizeIfNeeded() {
         if (size >= getThreshold()) {
-            increaseSize();
-        }
-    }
-
-    private void increaseSize() {
-        var oldArray = array;
-        array = new Entity[array.length * 2];
-        for (Entity entity : oldArray) {
-            if (entity != null && entity.notDeleted()) {
-                array[getIndex(entity.getKey(), array.length)] = entity;
+            var oldArray = array;
+            array = new Entity[array.length * 2];
+            for (Entity entity : oldArray) {
+                if (entity != null && entity.notDeleted()) {
+                    array[getIndex(entity.getKey(), array.length)] = entity;
+                }
             }
         }
     }
+
 
     private class Entity {
         private Object key;
