@@ -9,24 +9,21 @@ public class HashTable {
     private Entity[] array;
     private double loadFactor;
 
-    public HashTable() {
-        array = new Entity[DEFAULT_SIZE];
-        loadFactor = DEFAULT_LOAD_FACTOR;
-    }
-
-    public HashTable(int size) {
-        array = new Entity[size];
-        loadFactor = DEFAULT_LOAD_FACTOR;
-    }
-
-    public HashTable(double loadFactor) {
-        array = new Entity[DEFAULT_SIZE];
-        this.loadFactor = loadFactor;
-    }
-
     public HashTable(int size, double loadFactor) {
         array = new Entity[size];
         this.loadFactor = loadFactor;
+    }
+
+    public HashTable() {
+        this(DEFAULT_SIZE, DEFAULT_LOAD_FACTOR);
+    }
+
+    public HashTable(int size) {
+        this(size, DEFAULT_LOAD_FACTOR);
+    }
+
+    public HashTable(double loadFactor) {
+        this(DEFAULT_SIZE, loadFactor);
     }
 
     public Object put(Object key, Object value) {
