@@ -1,6 +1,5 @@
 package ru.itmo.java;
 
-import java.util.HashSet;
 
 public class HashTable {
 
@@ -8,7 +7,6 @@ public class HashTable {
     private static final double DEFAULT_LOAD_FACTOR = 0.5;
 
     private int size = 0;
-    private HashSet<Object> keys = new HashSet<>();
     private Entity[] array;
     private double loadFactor;
 
@@ -35,7 +33,6 @@ public class HashTable {
         array[index] = new Entity(key, value);
         if (oldEntity == null || oldEntity.isDeleted()) {
             size++;
-            keys.add(key);
             checkAndResizeIfNeeded();
             return null;
         }
@@ -56,7 +53,6 @@ public class HashTable {
             return null;
         }
         size--;
-        keys.remove(key);
         var value = array[index].getValue();
         array[index] = Entity.DELETED;
         return value;
@@ -70,15 +66,12 @@ public class HashTable {
         int arrayLength = array.length;
         int index = Math.abs(key.hashCode() % arrayLength);
         int startIndex = index;
-        boolean keyInKeys = keys.contains(key);
 
+        int k = 0;
 
         boolean secondTurn = false;
         while (array[index] != null) {
             if (array[index].notDeleted() && array[index].getKey().equals(key)){
-                break;
-            }
-            if (array[index].isDeleted() && !keyInKeys){
                 break;
             }
             if(secondTurn && array[index].isDeleted()){
